@@ -1,14 +1,14 @@
+const output = document.getElementById("output");
+
+function displayMessage(msg) {
+  output.textContent = msg;
+}
+
 function getLocation() {
   if (!("geolocation" in navigator)) {
-    alert("Ton navigateur ne supporte pas la géolocalisation.");
+    displayMessage("⚠️ Geolocalisation non supportée par ton navigateur.");
     return;
   }
-
-  const options = {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 0
-  };
 
   navigator.geolocation.getCurrentPosition(
     (position) => {
@@ -18,7 +18,7 @@ function getLocation() {
         accuracy: position.coords.accuracy
       };
 
-      console.log("Coordonnées récupérées :", coords);
+      displayMessage(`📍 Latitude: ${coords.latitude}, Longitude: ${coords.longitude}`);
 
       // Envoi au backend
       fetch("/save-location", {
@@ -26,26 +26,42 @@ function getLocation() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(coords)
       })
-        .then((res) => res.json())
-        .then((data) => console.log("Réponse serveur :", data))
-        .catch((err) => console.error("Erreur envoi :", err));
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "ok") {
+            console.log("📡 Coordonnées enregistrées :", data);
+          } else {
+            console.error("❌ Erreur serveur :", data.message);
+          }
+        })
+        .catch(err => console.error("❌ Erreur envoi :", err));
     },
     (error) => {
+      let msg = "";
       switch (error.code) {
         case error.PERMISSION_DENIED:
-          console.error("Permission refusée");
+          msg = "⛔ Permission refusée";
           break;
         case error.POSITION_UNAVAILABLE:
-          console.error("Position non disponible");
+          msg = "📡 Position non disponible";
           break;
         case error.TIMEOUT:
-          console.error("Temps dépassé");
+          msg = "⌛ Temps dépassé";
           break;
         default:
-          console.error("Erreur inconnue", error);
+          msg = "❓ Erreur inconnue";
       }
+
+      displayMessage(msg);
+
+      // Envoi au serveur pour logging
+      fetch("/save-location", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ error: msg })
+      }).catch(err => console.error("❌ Impossible d'envoyer l'erreur au serveur :", err));
     },
-    options
+    { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
   );
 }
 
