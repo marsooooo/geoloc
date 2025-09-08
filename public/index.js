@@ -14,15 +14,14 @@ function getLocation() {
     (position) => {
       const coords = {
         latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        accuracy: position.coords.accuracy
-      };
+        longitude: position.coords.longitude
+    };
 
-      const msg = `Latitude: ${coords.latitude}\nLongitude: ${coords.longitude}\nPrécision: ±${coords.accuracy} m`;
+      const msg = `Latitude: ${coords.latitude}\nLongitude: ${coords.longitude}`;
       displayMessage(msg);
 
-      // Envoi au backend
-        fetch("/geoloc/save-location", {  // <- ajoute /geoloc/
+      // Envoi backend
+        fetch("/geoloc/save-location", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(coords)
@@ -56,7 +55,6 @@ function getLocation() {
 
       displayMessage(msg);
 
-      // Envoi de l'erreur au serveur pour logging
       fetch("/geoloc/save-location", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

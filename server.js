@@ -13,14 +13,14 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Endpoint reception
 app.post("/save-location", (req, res) => {
-  const { latitude, longitude, accuracy, error } = req.body;
+  const { latitude, longitude, error } = req.body;
 
   if (error) {
     console.error("Erreur géolocalisation reçue :", error);
     return res.json({ status: "error", message: error });
   }
 
-  const logMsg = `Coordonnées reçues : latitude = ${latitude}, longitude = ${longitude}, précision = ±${accuracy} m`;
+  const logMsg = `Coordonnées reçues : latitude = ${latitude}, longitude = ${longitude}`;
   console.log(logMsg);
 
   res.json({ status: "ok", message: logMsg });
