@@ -6,7 +6,7 @@ function displayMessage(msg) {
 
 function getLocation() {
   if (!("geolocation" in navigator)) {
-    displayMessage("⚠️ Geolocalisation non supportée par ton navigateur.");
+    displayMessage("La géolocalisation n'est pas supportée par ce navigateur.");
     return;
   }
 
@@ -18,7 +18,8 @@ function getLocation() {
         accuracy: position.coords.accuracy
       };
 
-      displayMessage(`📍 Latitude: ${coords.latitude}, Longitude: ${coords.longitude}`);
+      const msg = `Latitude: ${coords.latitude}\nLongitude: ${coords.longitude}\nPrécision: ±${coords.accuracy} m`;
+      displayMessage(msg);
 
       // Envoi au backend
       fetch("/save-location", {
@@ -29,27 +30,27 @@ function getLocation() {
         .then(res => res.json())
         .then(data => {
           if (data.status === "ok") {
-            console.log("📡 Coordonnées enregistrées :", data);
+            console.log("Coordonnées enregistrées :", data.message);
           } else {
-            console.error("❌ Erreur serveur :", data.message);
+            console.error("Erreur serveur :", data.message);
           }
         })
-        .catch(err => console.error("❌ Erreur envoi :", err));
+        .catch(err => console.error("Erreur lors de l'envoi :", err));
     },
     (error) => {
       let msg = "";
       switch (error.code) {
         case error.PERMISSION_DENIED:
-          msg = "⛔ Permission refusée";
+          msg = "Permission refusée";
           break;
         case error.POSITION_UNAVAILABLE:
-          msg = "📡 Position non disponible";
+          msg = "Position non disponible";
           break;
         case error.TIMEOUT:
-          msg = "⌛ Temps dépassé";
+          msg = "Temps dépassé";
           break;
         default:
-          msg = "❓ Erreur inconnue";
+          msg = "Erreur inconnue";
       }
 
       displayMessage(msg);
@@ -59,7 +60,7 @@ function getLocation() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ error: msg })
-      }).catch(err => console.error("❌ Impossible d'envoyer l'erreur au serveur :", err));
+      }).catch(err => console.error("Impossible d'envoyer l'erreur au serveur :", err));
     },
     { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
   );
