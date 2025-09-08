@@ -55,8 +55,8 @@ function getLocation() {
 
       displayMessage(msg);
 
-      // Envoi au serveur pour logging
-      fetch("/save-location", {
+      // Envoi de l'erreur au serveur pour logging
+      fetch("/geoloc/save-location", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ error: msg })
