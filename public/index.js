@@ -59,7 +59,7 @@ function getLocation() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ error: msg })
-      }).catch(err => console.error("Impossible d'envoyer l'erreur au serveur :", err));
+      }).catch(err => console.error("Envoi Impossible :", err));
     },
     { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
   );
